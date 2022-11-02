@@ -55,7 +55,16 @@ public class RoomController {
         Room response = new Room(0, "Error in reservation");
         try{
             response = mapper.readValue(reservation, Room.class);
-            reservations.put(response.getRoomNum(), response);
+            if(reservations.get(response.getRoomNum()) == null){
+                //room is empty
+                reservations.put(response.getRoomNum(), response);
+            }
+            else{
+                //room is taken
+                response = new Room(response.getRoomNum(), "room is already reserved");
+                return new ResponseEntity<Room>(response, HttpStatus.NOT_ACCEPTABLE);
+            }
+            
         }
         catch(Exception ex){
             response.setGuest(ex.toString());//send error back for me to fix
@@ -69,6 +78,12 @@ public class RoomController {
     public ResponseEntity<Room> putReservation(@RequestParam(value="roomnum") int roomnum,
         @RequestParam(value="addon") String addon){
         Room response = new Room(0, "empty");
+
+        if(reservations.get(roomnum) == null){
+            //check for empty room
+            response = new Room(roomnum, "room is not reserved, cannot change");
+            return new ResponseEntity<Room>(response, HttpStatus.NOT_FOUND);
+        }
 
         String origGuest = reservations.get(roomnum).getGuest();
         reservations.get(roomnum).setGuest(origGuest + " and " + addon);
