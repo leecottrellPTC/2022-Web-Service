@@ -53,6 +53,9 @@ public class RoomController {
     {
         ObjectMapper mapper = new ObjectMapper();
         Room response = new Room(0, "Error in reservation");
+
+
+       
         try{
             response = mapper.readValue(reservation, Room.class);
             if(reservations.get(response.getRoomNum()) == null){
@@ -70,7 +73,10 @@ public class RoomController {
             response.setGuest(ex.toString());//send error back for me to fix
             //later clean this up
         }
+        
 
+       // System.out.println("\n\n\n\n\n\n\n\n\n-----------------------\n");
+       // System.out.println(reservation);
         return new ResponseEntity<Room>(response, HttpStatus.OK);
     }
 
@@ -97,6 +103,11 @@ public class RoomController {
         deleteReservation(@RequestParam(value="roomnum") int roomnum){
         Room response = new Room(0, "empty");
 
+        if(reservations.get(roomnum) == null){
+            //check for empty room
+            response = new Room(roomnum, "room is not reserved, cannot delete");
+            return new ResponseEntity<Room>(response, HttpStatus.NOT_FOUND);
+        }
         reservations.remove(roomnum);
         response.setRoomNum(roomnum);
         response.setGuest("deleted");
