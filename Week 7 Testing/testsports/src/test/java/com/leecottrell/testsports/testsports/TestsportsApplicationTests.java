@@ -27,7 +27,7 @@ class TestsportsApplicationTests {
 	}
 
 	@Test
-	public void testSoccer() throws Exception{
+	public void testSoccerTeam() throws Exception{
 		template = new TestRestTemplate();
 		base = new URL(base.toString() + "?sportName=soccer");
 
@@ -38,6 +38,20 @@ class TestsportsApplicationTests {
 		Sport sportJson = mapper.readValue(body, Sport.class);
 
 		assertEquals(sportJson.getTeamName(), "Riverhounds", 
+			"Soccer team name fails");
+	}
+
+	public void testSoccerStadium() throws Exception{
+		template = new TestRestTemplate();
+		base = new URL(base.toString() + "?sportName=soccer");
+
+		ResponseEntity<String> response = template.getForEntity(base.toString(), String.class);
+		String body = response.getBody();
+
+		ObjectMapper mapper = new ObjectMapper();
+		Sport sportJson = mapper.readValue(body, Sport.class);
+
+		assertEquals(sportJson.getStadium(), "Highmark Stadium", 
 			"Soccer team name fails");
 	}
 
